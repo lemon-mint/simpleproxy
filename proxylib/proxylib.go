@@ -64,7 +64,7 @@ func (p *Proxy) Serve() error {
 			break
 		}
 		if p.ConnectionPrint {
-			fmt.Println("connected", conn.LocalAddr(), conn.RemoteAddr())
+			fmt.Println("Connected", conn.LocalAddr(), ">", conn.RemoteAddr())
 		}
 		go p.handleconn(conn)
 	}
