@@ -38,13 +38,14 @@ func main() {
 		fmt.Println("Delay : true")
 	}
 	p := &proxylib.Proxy{
-		Protocol:    proto,
-		ListenAddr:  listenAddr,
-		Destination: dest,
-		UseDelay:    UseDelay,
-		Delay:       Delay,
-		Unit:        bufsize,
-		DebugPrint:  false,
+		Protocol:        proto,
+		ListenAddr:      listenAddr,
+		Destination:     dest,
+		UseDelay:        UseDelay,
+		Delay:           Delay,
+		Unit:            bufsize,
+		DebugPrint:      false,
+		ConnectionPrint: true,
 	}
 	log.Fatalln(p.Serve())
 }
