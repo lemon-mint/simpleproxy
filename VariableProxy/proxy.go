@@ -45,7 +45,7 @@ func main() {
 		Delay:           Delay,
 		Unit:            bufsize,
 		DebugPrint:      false,
-		ConnectionPrint: true,
+		ConnectionPrint: false,
 	}
 	go func() {
 		log.Fatalln(p.Serve())
