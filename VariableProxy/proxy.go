@@ -54,6 +54,11 @@ func main() {
 	for {
 		fmt.Print("latency (ms) >> ")
 		fmt.Scanln(&latency)
+		if latency == 0 {
+			p.UseDelay = false
+		} else {
+			p.UseDelay = true
+		}
 		p.Delay = time.Millisecond * time.Duration(latency)
 	}
 }
