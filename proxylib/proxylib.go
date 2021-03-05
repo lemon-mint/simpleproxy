@@ -1,6 +1,7 @@
 package proxylib
 
 import (
+	"fmt"
 	"net"
 	"time"
 )
@@ -11,23 +12,24 @@ type Proxy struct {
 	ListenAddr  string
 	Destination string
 
-	Unit     int
-	UseDelay bool
-	Delay    time.Duration
+	Unit            int
+	UseDelay        bool
+	Delay           time.Duration
+	DebugPrint      bool
+	ConnectionPrint bool
 }
 
 func (p *Proxy) handleconn(sconn net.Conn) {
 	dconn, err := net.Dial(p.Protocol, p.Destination)
 	if err != nil {
 		sconn.Close()
-		dconn.Close()
 		return
 	}
-	go p.pipe(sconn, dconn)
-	go p.pipe(dconn, sconn)
+	go p.pipe(sconn, dconn, "src -> dst")
+	go p.pipe(dconn, sconn, "dst -> src")
 }
 
-func (p *Proxy) pipe(src, dst net.Conn) {
+func (p *Proxy) pipe(src, dst net.Conn, id string) {
 	buf := make([]byte, p.Unit)
 	defer src.Close()
 	defer dst.Close()
@@ -43,6 +45,9 @@ func (p *Proxy) pipe(src, dst net.Conn) {
 		if err != nil {
 			return
 		}
+		if p.DebugPrint {
+			fmt.Println(id, "Proxyed", n, "bytes.")
+		}
 	}
 }
 
@@ -57,6 +62,9 @@ func (p *Proxy) Serve() error {
 		conn, err = l.Accept()
 		if err != nil {
 			break
+		}
+		if p.ConnectionPrint {
+			fmt.Println("connected", conn.LocalAddr(), conn.RemoteAddr())
 		}
 		go p.handleconn(conn)
 	}
