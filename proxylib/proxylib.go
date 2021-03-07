@@ -17,6 +17,8 @@ type Proxy struct {
 	Delay           time.Duration
 	DebugPrint      bool
 	ConnectionPrint bool
+	ll              net.Listener
+	stop            bool
 }
 
 func (p *Proxy) handleconn(sconn net.Conn) {
@@ -38,6 +40,9 @@ func (p *Proxy) pipe(src, dst net.Conn, id string) {
 		if err != nil {
 			return
 		}
+		if p.stop {
+			return
+		}
 		if p.UseDelay {
 			time.Sleep(p.Delay)
 		}
@@ -57,6 +62,8 @@ func (p *Proxy) Serve() error {
 	if err != nil {
 		return err
 	}
+	p.ll = l
+	p.stop = false
 	for {
 		var conn net.Conn
 		conn, err = l.Accept()
@@ -69,4 +76,10 @@ func (p *Proxy) Serve() error {
 		go p.handleconn(conn)
 	}
 	return err
+}
+
+//Stop : stop proxy server
+func (p *Proxy) Stop() error {
+	p.stop = true
+	return p.ll.Close()
 }
